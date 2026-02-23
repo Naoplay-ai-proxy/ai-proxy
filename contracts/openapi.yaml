@@ -1,7 +1,7 @@
 openapi: 3.0.3
 info:
   title: Meeting Summary API
-  version: 1.0.1
+  version: 1.0.2
   description: API to generate structured meeting summaries
 
 paths:
@@ -16,8 +16,8 @@ paths:
               type: object
               required:
                 - meeting_id
-                - transcript
-		- language
+                - transcript 
+                - language
               properties:
                 meeting_id:
                   type: string
@@ -26,7 +26,7 @@ paths:
                 language:
                   type: string
                   example: "fr"
-		  enum: ["fr", "en"]
+                  enum: ["fr", "en"]
       responses:
         "200":
           description: Summary generated
@@ -34,19 +34,19 @@ paths:
             application/json:
               schema:
                 type: object
-		additionalProperties: false
-		required:
-		  - meeting_id
-		  - summary
-		  - actions 
+                additionalProperties: false
+                required: 
+                  - meeting_id
+                  - summary
+                  - actions 
                 properties:
                   meeting_id:
                     type: string
                   summary:
                     type: string
-		  action:
-		    type: array
-		    items:
+                  actions:
+                    type: array
+                    items:
                       type: object
                       additionalProperties: false
                       required:
@@ -61,7 +61,7 @@ paths:
           description: Bad request
         "401":
           description: Unauthorized
-	"422":
-	  description: Validation error
+        "422":
+          description: Validation error
         "500":
           description: Internal server error
