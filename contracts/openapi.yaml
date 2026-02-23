@@ -1,0 +1,45 @@
+openapi: 3.0.3
+info:
+  title: Meeting Summary API
+  version: 1.0.0
+  description: API to generate structured meeting summaries
+
+paths:
+  /meeting-summary:
+    post:
+      summary: Generate meeting summary
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - meeting_id
+                - transcript
+              properties:
+                meeting_id:
+                  type: string
+                transcript:
+                  type: string
+                language:
+                  type: string
+                  example: "fr"
+      responses:
+        "200":
+          description: Summary generated
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  meeting_id:
+                    type: string
+                  summary:
+                    type: string
+        "400":
+          description: Bad request
+        "401":
+          description: Unauthorized
+        "500":
+          description: Internal server error
