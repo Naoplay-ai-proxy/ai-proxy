@@ -1,7 +1,7 @@
 from fastapi import APIRouter, HTTPException, Depends
-from .models import MeetingSummaryRequest, MeetingSummaryResponse
+from .schemas.meeting_summary import MeetingSummaryRequest, MeetingSummaryResponse
 from .llm_client import LLMClient, get_llm_client
-from .prompts import get_system_prompt
+from .prompt import get_system_prompt
 
 router = APIRouter()
 
