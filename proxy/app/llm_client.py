@@ -63,3 +63,5 @@ class LLMClient:
             # Log détaillé pour la Tâche 5 (Observabilité)
             print(f"[LLM_ERROR] Failed call to {self.model_name}: {str(e)}")
             raise RuntimeError(f"LLM Provider Error: {str(e)}")
+    def get_llm_client() :
+        return LLMClient()
