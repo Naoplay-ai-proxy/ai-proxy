@@ -37,7 +37,7 @@ client = TestClient(app)
 # PARTIE 1 : TESTS UNITAIRES SCHEMA (Validation Stricte)
 # =================================================================
 
-@pytest.mark.security
+@pytest.mark.unitaire
 def test_valid_request_schema():
     """Happy Path pour le schéma"""
     req = MeetingSummaryRequest(
@@ -47,7 +47,7 @@ def test_valid_request_schema():
     )
     assert req.meeting_id == "PROJET-2026_ABC"
 
-@pytest.mark.security
+@pytest.mark.abuse
 def test_abuse_prompt_injection_in_id_schema():
     """Vérifie que l'ID n'accepte pas de caractères spéciaux bizarres"""
     with pytest.raises(ValidationError) as excinfo:
@@ -58,7 +58,7 @@ def test_abuse_prompt_injection_in_id_schema():
         )
     assert "Meeting ID contains forbidden characters" in str(excinfo.value)
 
-@pytest.mark.security
+@pytest.mark.abuse
 def test_abuse_xss_injection_schema():
     """Vérifie le blocage des scripts HTML/JS"""
     with pytest.raises(ValidationError) as excinfo:
@@ -69,7 +69,7 @@ def test_abuse_xss_injection_schema():
         )
     assert "Security Alert: Malicious pattern detected" in str(excinfo.value)
 
-@pytest.mark.security
+@pytest.mark.abuse
 def test_abuse_keywords_schema():
     """Vérifie le blocage des mots-clés d'injection connus"""
     payloads = [
@@ -91,7 +91,7 @@ def test_abuse_keywords_schema():
 # PARTIE 2 : TESTS UNITAIRES PROMPT (Template Security)
 # =================================================================
 
-@pytest.mark.security
+@pytest.mark.abuse
 def test_prompt_template_integrity():
     """Vérifie que le prompt système contient les protections"""
     prompt = get_system_prompt("French")
@@ -105,7 +105,7 @@ def test_prompt_template_integrity():
 # PARTIE 3 : TESTS D'INTÉGRATION ROUTER (Sandboxing)
 # =================================================================
 
-@pytest.mark.security
+@pytest.mark.abuse
 def test_router_sandboxing(spy_client):
     """
     Si un texte malveillant passe le filtre regex (car pas dans la liste noire),

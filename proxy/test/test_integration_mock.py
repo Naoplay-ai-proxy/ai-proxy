@@ -34,6 +34,7 @@ def client_mocked():
 
 # --- 3. Les Tests ---
 
+@pytest.mark.integration
 def test_api_meeting_summary_mocked(client_mocked):
     """
     Test d'intégration E2E SANS CLÉ API.
@@ -57,6 +58,7 @@ def test_api_meeting_summary_mocked(client_mocked):
     # assert data["summary"] == "Ceci est un résumé simulé par le test."
     # assert len(data["actions"]) == 2
 
+@pytest.mark.integration
 def test_api_validation_still_works(client_mocked):
     """Vérifie que même mocké, la validation des entrées (Pydantic) reste active"""
     payload = {

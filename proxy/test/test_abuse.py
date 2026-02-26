@@ -6,7 +6,7 @@ from proxy.app.schemas.meeting_summary import MeetingSummaryRequest
 # 1. TESTS DE REQUÊTES VALIDES (HAPPY PATH)
 # =================================================================
 
-@pytest.mark.security
+@pytest.mark.unitaire
 def test_valid_request():
     """Vérifie qu'une requête parfaitement conforme passe."""
     data = {
@@ -22,7 +22,7 @@ def test_valid_request():
 # 2. TESTS D'ABUS "HARD" (SÉCURITÉ ET INJECTION)
 # =================================================================
 
-@pytest.mark.security
+@pytest.mark.abuse
 def test_abuse_prompt_injection_in_id():
     """
     ABUS : Tentative d'injecter une commande LLM dans le meeting_id.
@@ -36,7 +36,7 @@ def test_abuse_prompt_injection_in_id():
         )
     assert "Meeting ID contains forbidden characters" in str(excinfo.value)
 
-@pytest.mark.security
+@pytest.mark.abuse
 def test_abuse_xss_script_injection():
     """
     ABUS : Injection de balise Script pour tenter une attaque XSS.
@@ -50,7 +50,7 @@ def test_abuse_xss_script_injection():
         )
     assert "Security Alert: Malicious pattern detected" in str(excinfo.value)
 
-@pytest.mark.security
+@pytest.mark.abuse
 def test_abuse_semantic_injection_keywords():
     """
     ABUS : Utilisation de mots-clés de 'Prompt Injection' classiques.
@@ -74,7 +74,7 @@ def test_abuse_semantic_injection_keywords():
 # 3. TESTS DE LIMITES (DENIAL OF SERVICE - DOS)
 # =================================================================
 
-@pytest.mark.security
+@pytest.mark.abuse
 def test_abuse_oversized_transcript():
     """
     ABUS : Envoi d'un transcript gigantesque pour saturer la mémoire.
@@ -86,7 +86,7 @@ def test_abuse_oversized_transcript():
             language="fr"
         )
 
-@pytest.mark.security
+@pytest.mark.abuse
 def test_abuse_invalid_language_logic():
     """
     ABUS : Tenter de forcer une langue non supportée.
@@ -103,7 +103,7 @@ def test_abuse_invalid_language_logic():
 # 4. TESTS DE STRUCTURE
 # =================================================================
 
-@pytest.mark.security
+@pytest.mark.abuse
 def test_abuse_empty_fields():
     """Vérifie que l'absence de données obligatoires est bloquée."""
     with pytest.raises(ValidationError):

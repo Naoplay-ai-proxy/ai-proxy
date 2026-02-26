@@ -54,6 +54,7 @@ def test_api_meeting_summary_nominal():
     assert any("chiffres" in d or "comptabilité" in d for d in action_descriptions), \
         "L'action concernant les chiffres de comptabilité n'a pas été trouvée"
 
+@pytest.mark.integration
 def test_api_validation_error():
     """Vérifie que l'API rejette bien une mauvaise requête"""
     payload = {
