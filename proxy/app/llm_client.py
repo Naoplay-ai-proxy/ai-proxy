@@ -2,7 +2,7 @@ import litellm
 import os
 import json
 from typing import Dict, Any
-from .models import MeetingSummaryResponse # Import de la Tâche 2 pour référence
+from .schemas.meeting_summary import MeetingSummaryResponse # Import de la Tâche 2 pour référence
 
 class LLMClient:
     def __init__(self):
@@ -63,3 +63,6 @@ class LLMClient:
             # Log détaillé pour la Tâche 5 (Observabilité)
             print(f"[LLM_ERROR] Failed call to {self.model_name}: {str(e)}")
             raise RuntimeError(f"LLM Provider Error: {str(e)}")
+            
+def get_llm_client():
+    return LLMClient()
