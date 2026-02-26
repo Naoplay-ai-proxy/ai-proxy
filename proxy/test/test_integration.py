@@ -5,6 +5,7 @@ from proxy.app.main import app  # On importe l'application FastAPI réelle
 # Création du client de test (simule le navigateur/curl)
 client = TestClient(app)
 
+@pytest.mark.ai_call
 def test_api_meeting_summary_nominal():
     """
     Test d'intégration complet (E2E) :
