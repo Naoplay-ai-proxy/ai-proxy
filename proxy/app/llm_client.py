@@ -2,7 +2,7 @@ import litellm
 import os
 import json
 from typing import Dict, Any
-from .models import MeetingSummaryResponse # Import de la Tâche 2 pour référence
+from .schemas.meeting_summary import MeetingSummaryResponse # Import de la Tâche 2 pour référence
 
 class LLMClient:
     def __init__(self):
