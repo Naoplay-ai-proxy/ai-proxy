@@ -74,7 +74,7 @@ def test_abuse_semantic_injection_keywords():
 # 3. TESTS DE LIMITES (DENIAL OF SERVICE - DOS)
 # =================================================================
 
-@pytest.mark.abuse
+@pytest.mark.unitaire
 def test_abuse_oversized_transcript():
     """
     ABUS : Envoi d'un transcript gigantesque pour saturer la mémoire.
@@ -86,7 +86,7 @@ def test_abuse_oversized_transcript():
             language="fr"
         )
 
-@pytest.mark.abuse
+@pytest.mark.unitaire
 def test_abuse_invalid_language_logic():
     """
     ABUS : Tenter de forcer une langue non supportée.
@@ -103,7 +103,7 @@ def test_abuse_invalid_language_logic():
 # 4. TESTS DE STRUCTURE
 # =================================================================
 
-@pytest.mark.abuse
+@pytest.mark.unitaire
 def test_abuse_empty_fields():
     """Vérifie que l'absence de données obligatoires est bloquée."""
     with pytest.raises(ValidationError):

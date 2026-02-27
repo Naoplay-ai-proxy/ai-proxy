@@ -88,7 +88,7 @@ def test_abuse_keywords_schema():
 
 
 # =================================================================
-# PARTIE 2 : TESTS UNITAIRES PROMPT (Template Security)
+# PARTIE 2 : TESTS UNITAIRES/ABUS PROMPT (Template Security)
 # =================================================================
 
 @pytest.mark.abuse
@@ -105,7 +105,7 @@ def test_prompt_template_integrity():
 # PARTIE 3 : TESTS D'INTÉGRATION ROUTER (Sandboxing)
 # =================================================================
 
-@pytest.mark.abuse
+@pytest.mark.integration
 def test_router_sandboxing(spy_client):
     """
     Si un texte malveillant passe le filtre regex (car pas dans la liste noire),
