@@ -13,6 +13,7 @@ MOCK_LITELLM_RESPONSE = {
     ]
 }
 
+@pytest.mark.unit
 @pytest.mark.asyncio
 async def test_ask_structured_parsing():
     """

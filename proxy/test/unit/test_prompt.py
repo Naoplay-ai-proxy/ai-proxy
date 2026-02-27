@@ -1,7 +1,7 @@
 import pytest
 from proxy.app.prompt import get_system_prompt
 
-@pytest.mark.unitaire
+@pytest.mark.unit
 def test_prompt_generation_french():
     """Vérifie que la langue cible est bien injectée en Français"""
     prompt = get_system_prompt("French")
