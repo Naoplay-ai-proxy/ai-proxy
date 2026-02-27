@@ -115,5 +115,3 @@ Après résolution :
 - une CI en place (GitHub Actions) et des critères de release définis
 
 Pour l’instant : une “release” = un état stable sur `main` + validation minimale du livrable.
-
----
