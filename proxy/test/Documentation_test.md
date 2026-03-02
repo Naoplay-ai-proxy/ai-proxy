@@ -7,15 +7,30 @@ Ce document décrit l'organisation, la typologie et les procédures d'exécution
 Les tests sont situés dans le répertoire `proxy/test/`. La configuration globale est définie dans le fichier `pytest.ini` à la racine du projet.
 
 ### Prérequis
-*   Les dépendances doivent être installées via `pip install -r requirements.txt`.
-*   Un fichier `.env` doit être présent à la racine pour les tests nécessitant des variables d'environnement (notamment pour `ai_call`).
+Le projet utilise Poetry pour la gestion des dépendances et de l'environnement virtuel.
+
+1.  **Installer Poetry** (si non présent) :
+    ```bash
+    curl -sSL [https://install.python-poetry.org](https://install.python-poetry.org) | python3 -
+    ```
+
+2.  **Installer la version Python cible** (via `pyenv`) :
+    ```bash
+    pyenv install 3.10.14
+    pyenv local 3.10.14
+    ```
+
+3.  **Installer les dépendances du projet** :
+    ```bash
+    poetry install
+    ```
 
 ### Organisation des Marqueurs (Markers)
 Le projet utilise des marqueurs `pytest` pour catégoriser les tests selon leur nature et leur impact (vitesse, coût, dépendances).
 
 | Marqueur | Description | Usage |
 | :--- | :--- | :--- |
-| **`unitaire`** | Tests isolés vérifiant la logique interne des fonctions et classes sans dépendances externes. | Validation des schémas Pydantic, génération de prompts. |
+| **`unit`** | Tests isolés vérifiant la logique interne des fonctions et classes sans dépendances externes. | Validation des schémas Pydantic, génération de prompts. |
 | **`integration`** | Tests de bout en bout (End-to-End) simulant des appels API HTTP complets. | Vérification du routage, des codes HTTP et du format de réponse. Utilise souvent des Mocks. |
 | **`abuse`** | Tests de sécurité, de robustesse et de conformité (Security & Governance). | Tentatives d'injection de prompt, XSS, dépassement de quotas, validation des entrées. |
 | **`ai_call`** | Tests effectuant un appel réel vers le fournisseur LLM (OpenAI, Anthropic, etc.). | Vérification finale de la connexion. **Nécessite une clé API valide et engendre des coûts.** |
@@ -84,30 +99,30 @@ Les tests s'exécutent via la commande `pytest` à la racine du projet. Voici le
 
 ### Exécuter toute la suite de tests (sauf appels IA si configuré par défaut)
 ```bash
-pytest
+poetry run pytest
 ```
 
 ### Exécuter uniquement les tests unitaires et d'intégration (Développement rapide)
 Cette commande est recommandée pour le développement quotidien (CI/CD) car elle est rapide et gratuite.
 ```bash
-pytest -m "not ai_call"
+poetry run pytest -m "not ai_call"
 ```
 
 ### Exécuter uniquement les tests de sécurité
 Pour vérifier la robustesse et les règles de gouvernance.
 ```bash
-pytest -m abuse
+poetry run pytest -m abuse
 ```
 
 ### Exécuter les tests avec appel réel au LLM
 À utiliser avec parcimonie pour valider la configuration finale. Assurez-vous d'avoir configuré votre fichier `.env`.
 ```bash
-pytest -m ai_call
+poetry run pytest -m ai_call
 ```
 
 ### Exécuter un fichier spécifique
 ```bash
-pytest proxy/test/test_integration_mock.py
+poetry run pytest proxy/test/test_integration_mock.py
 ```
 
 ## 4. Architecture de Mocking

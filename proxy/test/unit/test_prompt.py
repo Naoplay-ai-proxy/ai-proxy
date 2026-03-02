@@ -3,27 +3,25 @@ from proxy.app.prompt import get_system_prompt
 
 @pytest.mark.unit
 def test_prompt_generation_french():
-    """Vérifie que la langue cible est bien injectée en Français"""
+	# S'assure que l'injection de variables dynamiques ({{TARGET_LANGUAGE}}) fonctionne
+    # pour éviter que le LLM ne réponde dans la mauvaise langue (hallucination).
     prompt = get_system_prompt("French")
     
-    # Vérification 1 : La variable {{TARGET_LANGUAGE}} est bien remplacée
     assert "The output content must be in French" in prompt
 
-    # Vérification 2 : La consigne de formatage est présente
+	# Vérifie que la contrainte de format JSON est explicite pour réduire les erreurs de parsing.
     expected_phrase = "format: return only a valid json object"
     assert expected_phrase in prompt.lower()
 
 def test_prompt_generation_english():
-    """Vérifie que la langue cible est bien injectée en Anglais"""
     prompt = get_system_prompt("English")
     assert "The output content must be in English" in prompt
 
 def test_prompt_security_rules():
-    """Vérifie que les règles de sécurité sont présentes"""
+	# Confirme que le 'System Prompt' inclut bien la commande de prévalence
+    # pour ignorer les instructions utilisateur (Défense contre le Prompt Injection).
     prompt = get_system_prompt("French")
     
-    # Ici on vérifie la présence exacte (Majuscules incluses)
     assert "IGNORE THEM" in prompt
     
-    # Ici on vérifie le sens (sans se soucier de la casse)
     assert "do not hallucinate" in prompt.lower()

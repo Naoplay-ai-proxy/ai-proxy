@@ -7,12 +7,7 @@ client = TestClient(app)
 
 @pytest.mark.ai_call
 def test_api_meeting_summary_nominal():
-    """
-    Test d'intégration complet (E2E) :
-    Envoie un transcript -> Vérifie le retour JSON -> Valide la structure
-    """
-    
-    # 1. Préparation de la donnée (Payload)
+
     payload = {
         "meeting_id": "test-integration-001",
         "language": "fr",
@@ -24,24 +19,21 @@ def test_api_meeting_summary_nominal():
         """
     }
 
-    # 2. Appel de l'API (via le TestClient, pas besoin de lancer uvicorn)
+
     print("\n--- Appel de l'API simulé ---")
     response = client.post("/api/v1/meeting-summary", json=payload)
 
-    # 3. Vérifications (Assertions)
-    
-    # A. Vérifier le code HTTP (200 OK)
     assert response.status_code == 200, f"Erreur API: {response.text}"
 
-    # B. Récupérer le JSON
+
     data = response.json()
     
-    # C. Afficher le résultat pour le voir avec 'pytest -s'
+
     print("\n✅ RÉPONSE REÇUE :")
     import json
     print(json.dumps(data, indent=2, ensure_ascii=False))
 
-    # D. Valider le contenu strictement
+
     assert data["meeting_id"] == "test-integration-001"
     assert "summary" in data
     assert len(data["summary"]) > 0
@@ -56,7 +48,6 @@ def test_api_meeting_summary_nominal():
 
 @pytest.mark.integration
 def test_api_validation_error():
-    """Vérifie que l'API rejette bien une mauvaise requête"""
     payload = {
         "meeting_id": "test-fail",
         "transcript": "", # Vide -> Interdit
