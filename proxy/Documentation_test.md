@@ -30,7 +30,7 @@ Le projet utilise des marqueurs `pytest` pour catégoriser les tests selon leur 
 
 | Marqueur | Description | Usage |
 | :--- | :--- | :--- |
-| **`unitaire`** | Tests isolés vérifiant la logique interne des fonctions et classes sans dépendances externes. | Validation des schémas Pydantic, génération de prompts. |
+| **`unit`** | Tests isolés vérifiant la logique interne des fonctions et classes sans dépendances externes. | Validation des schémas Pydantic, génération de prompts. |
 | **`integration`** | Tests de bout en bout (End-to-End) simulant des appels API HTTP complets. | Vérification du routage, des codes HTTP et du format de réponse. Utilise souvent des Mocks. |
 | **`abuse`** | Tests de sécurité, de robustesse et de conformité (Security & Governance). | Tentatives d'injection de prompt, XSS, dépassement de quotas, validation des entrées. |
 | **`ai_call`** | Tests effectuant un appel réel vers le fournisseur LLM (OpenAI, Anthropic, etc.). | Vérification finale de la connexion. **Nécessite une clé API valide et engendre des coûts.** |
@@ -111,7 +111,7 @@ poetry run pytest -m "not ai_call"
 ### Exécuter uniquement les tests de sécurité
 Pour vérifier la robustesse et les règles de gouvernance.
 ```bash
-poetry pytest -m abuse
+poetry run pytest -m abuse
 ```
 
 ### Exécuter les tests avec appel réel au LLM
