@@ -20,8 +20,8 @@
 ## 6) Erreurs courantes
 ### Import error / module not found
 - Vérifier : `poetry install`
-- Vérifier que tu utilises l’environnement Poetry :
+- Vérifier l'utilisation de l’environnement Poetry :
   - `poetry run python -c "import proxy; print('ok')"`
 
 ### Tests async
-- Si tu utilises `pytest.mark.asyncio`, vérifier que `pytest-asyncio` est installé/configuré.
+- Si on utilise `pytest.mark.asyncio`, vérifier que `pytest-asyncio` est installé/configuré.
