@@ -3,8 +3,8 @@ from typing import List, Optional
 import os
 
 MAX_TRANSCRIPT_LENGTH = int(os.getenv("MAX_TRANSCRIPT_LENGTH", "200000"))
-ALLOWED_LANGUAGES = os.getenv("ALLOWED_LANGUAGES", "fr,en").split("")
-ALLOWED_SET={x.strip() for x in ALLOWED_LANGUAGES.split(",") if x.strip()}
+ALLOWED_LANGUAGES = os.getenv("ALLOWED_LANGUAGES", "fr,en").split(",")
+ALLOWED_SET={x.strip() for x in ALLOWED_LANGUAGES if x.strip()}
 
 class MeetingSummaryRequest(BaseModel):
     
