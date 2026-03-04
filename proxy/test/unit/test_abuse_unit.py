@@ -24,7 +24,11 @@ def test_abuse_prompt_injection_in_id():
             transcript="Réunion standard",
             language="fr"
         )
-    assert "Meeting ID contains forbidden characters" in str(excinfo.value)
+    errors = excinfo.value.errors()
+    assert errors[0]["loc"] == ("meeting_id",)
+    assert "Meeting ID contains forbidden characters" in errors[0]["msg"]
+    #assert "Meeting ID contains forbidden characters" in str(excinfo.value)
+    #changement de assert pour matcher le nouveau message d'erreur de validation de pydantic v2 qui inclut le champ dans le message d'erreur.
 
 @pytest.mark.abuse
 def test_abuse_xss_script_injection():

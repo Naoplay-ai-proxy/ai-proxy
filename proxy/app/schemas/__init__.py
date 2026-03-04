@@ -3,3 +3,8 @@ from .meeting_summary import (
     MeetingSummaryResponse,
     ActionItem,
 )
+__all__ = [
+    "MeetingSummaryRequest",
+    "MeetingSummaryResponse",
+    "ActionItem",
+]
