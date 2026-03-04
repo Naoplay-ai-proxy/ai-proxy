@@ -1,0 +1,15 @@
+# Environnement virtuel
+.venv/
+
+# VS Code
+.vscode/
+
+# Python
+__pycache__/
+*.pyc
+# pytest
+.pytest_cache/
+# DS_Store
+.DS_Store
+# ruff
+.ruff_cache/

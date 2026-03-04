@@ -1,8 +1,7 @@
-# PROMPT CONFIGURATION (Task 4)
+# PROMPT CONFIGURATION
 PROMPT_VERSION = "v1.0"
 PROMPT_NAME = "YS_MEETING_SUMMARIZER"
 
-# System prompt is written in English to ensure better logic handling by GPT/Claude
 SYSTEM_PROMPT_TEMPLATE = """You are an expert Executive Assistant. 
 Analyze the meeting transcript and provide a structured JSON summary.
 
