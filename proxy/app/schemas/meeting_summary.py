@@ -1,16 +1,35 @@
 from pydantic import BaseModel, Field,field_validator
 from typing import List, Optional
 import os
+import re
 
 MAX_TRANSCRIPT_LENGTH = int(os.getenv("MAX_TRANSCRIPT_LENGTH", "200000"))
 ALLOWED_LANGUAGES = os.getenv("ALLOWED_LANGUAGES", "fr,en").split(",")
 ALLOWED_SET={x.strip() for x in ALLOWED_LANGUAGES if x.strip()}
 
+MEETING_ID_PATTERN = re.compile(r"^[A-Za-z0-9][A-Za-z0-9_-]{0,63}$")
+
+# Détection XSS / patterns malveillants 
+MALICIOUS_TRANSCRIPT_RE = re.compile(
+    r"(?is)<\s*script\b|</\s*script\s*>|javascript\s*:|on\w+\s*=",)
+    
+# Détection de patterns d'injection sémantique / prompt injection
+PROMPT_INJECTION_RE = re.compile(
+    r"(?is)"
+    r"\bignore\s+previous\s+instructions\b"
+    r"|"
+    r"\bsystem\s+prompt\b"
+    r"|"
+    r"\bwithout\s+safety\s+filters\b"
+    r"|"
+    r"\badmin\s+access\b"
+)
+
 class MeetingSummaryRequest(BaseModel):
     
 
-    meeting_id: str = Field(min_length=1)
-    transcript: str = Field(min_length=1, max_length=200000) 
+    meeting_id: str = Field(min_length=1, max_length=64)
+    transcript: str = Field(min_length=1, max_length=MAX_TRANSCRIPT_LENGTH) 
     language: Optional[str] = None
     
     # id non vide et non null
@@ -20,15 +39,27 @@ class MeetingSummaryRequest(BaseModel):
         v2 = v.strip()
         if not v2:
             raise ValueError("Meeting ID is required and cannot be empty.")
+        if not MEETING_ID_PATTERN.match(v2):
+            raise ValueError(
+                "Meeting ID contains forbidden characters"
+            )
         return v2
     
     # transcript non vide et non null et pas trop long
     @field_validator("transcript")
     @classmethod
     def validate_transcript(cls, v: str) -> str:
-        if len(v) > MAX_TRANSCRIPT_LENGTH:
+        v2 = v.strip()
+        if not v2:
+            raise ValueError("Transcript is required and cannot be empty.")
+        # max_length est déjà géré par Field, mais garder ce check ne fait pas de mal
+        if len(v2) > MAX_TRANSCRIPT_LENGTH:
             raise ValueError(f"Transcript exceeds maximum length of {MAX_TRANSCRIPT_LENGTH}.")
-        return v
+        
+        if MALICIOUS_TRANSCRIPT_RE.search(v2) or  PROMPT_INJECTION_RE.search(v2):
+            raise ValueError("Security Alert: Malicious pattern detected in transcript.")
+
+        return v2
     
     @field_validator("language")
     @classmethod
