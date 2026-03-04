@@ -1,16 +1,19 @@
-from pydantic import BaseModel, Field, field_validator
+from pydantic import BaseModel, Field,field_validator
 from typing import List, Optional
 import os
 
 MAX_TRANSCRIPT_LENGTH = int(os.getenv("MAX_TRANSCRIPT_LENGTH", "200000"))
 ALLOWED_LANGUAGES = os.getenv("ALLOWED_LANGUAGES", "fr,en").split(",")
-ALLOWED_SET = {x.strip() for x in ALLOWED_LANGUAGES if x.strip()}
+ALLOWED_SET={x.strip() for x in ALLOWED_LANGUAGES if x.strip()}
 
 class MeetingSummaryRequest(BaseModel):
+    
+
     meeting_id: str = Field(min_length=1)
-    transcript: str = Field(min_length=1, max_length=MAX_TRANSCRIPT_LENGTH) 
+    transcript: str = Field(min_length=1, max_length=200000) 
     language: Optional[str] = None
     
+    # id non vide et non null
     @field_validator("meeting_id")
     @classmethod
     def validate_meeting_id(cls, v: str):
@@ -19,6 +22,7 @@ class MeetingSummaryRequest(BaseModel):
             raise ValueError("Meeting ID is required and cannot be empty.")
         return v2
     
+    # transcript non vide et non null et pas trop long
     @field_validator("transcript")
     @classmethod
     def validate_transcript(cls, v: str) -> str:
