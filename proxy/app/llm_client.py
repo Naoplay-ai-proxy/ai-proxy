@@ -45,5 +45,25 @@ class LLMClient:
             print(f"[LLM_ERROR] Failed call to {self.model_name}: {str(e)}")
             raise RuntimeError(f"LLM Provider Error: {str(e)}")
 
-def get_llm_client() -> LLMClient:
+# Mock client pour les tests locaux sans faire de vrais appels LLM
+class MockLLMClient:
+    async def ask_structured(self, system_instructions: str, user_message: str) -> Dict[str, Any]:
+        # réponse stable pour tester l’API end-to-end
+        return {
+            "summary": "MOCK: résumé de test (pas de vrai LLM).",
+            "actions": [
+                {"owner": "Unknown", "description": "MOCK: action de test"}
+            ]
+        }
+
+def get_llm_client():
+    if os.getenv("LLM_MODE", "").lower() in ("mock", "1", "true", "yes"):
+        return MockLLMClient()
+    
+    if os.getenv("LLM_MODEL_NAME", "").lower() == "mock":
+        return MockLLMClient()
+
     return LLMClient()
+
+#def get_llm_client() -> LLMClient:
+#    return LLMClient()
