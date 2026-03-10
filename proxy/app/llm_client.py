@@ -6,7 +6,7 @@ from .schemas.meeting_summary import MeetingSummaryResponse
 
 class LLMClient:
     def __init__(self):
-        self.model_name = os.getenv("LLM_MODEL_NAME", "gpt-3.5-turbo")
+        self.model_name = os.getenv("LLM_MODEL_NAME", "gpt-4.1-mini")
         self.api_key = os.getenv("LLM_API_KEY")
         
         if not self.api_key:
