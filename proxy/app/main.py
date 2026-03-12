@@ -13,6 +13,7 @@ app = FastAPI(
 )
 # La version de l'API est gérée par Gravitee dans l'uri, pas besoin de préfixe ici
 #app.include_router(api_router, prefix="/api/v1")
+app.include_router(api_router)
 
 @app.get("/health")
 def health_check():
