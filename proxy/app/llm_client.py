@@ -5,12 +5,9 @@ from typing import Dict, Any
 from .schemas.meeting_summary import MeetingSummaryResponse
 
 class LLMClient:
-    def __init__(self):
-        self.model_name = os.getenv("LLM_MODEL_NAME", "gpt-4.1-mini")
-        self.api_key = os.getenv("LLM_API_KEY")
-        
-        if not self.api_key:
-            print("WARNING: LLM_API_KEY is missing. Calls will fail unless mocked.")
+    def __init__(self, *, api_key: str, model_name: str):
+        self.model_name = model_name
+        self.api_key = api_key
 
     async def ask_structured(self, system_instructions: str, user_message: str) -> Dict[str, Any]:
         try:
@@ -56,14 +53,27 @@ class MockLLMClient:
             ]
         }
 
-def get_llm_client():
-    if os.getenv("LLM_MODE", "").lower() in ("mock", "1", "true", "yes"):
-        return MockLLMClient()
-    
-    if os.getenv("LLM_MODEL_NAME", "").lower() == "mock":
+def build_llm_client(settings):
+    if settings.llm_mode.lower() in ("mock", "1", "true", "yes"):
         return MockLLMClient()
 
-    return LLMClient()
+    if settings.llm_model_name.lower() == "mock":
+        return MockLLMClient()
+
+    return LLMClient(
+        api_key=settings.llm_api_key,
+        model_name=settings.llm_model_name,
+    )
+
+
+#def get_llm_client():
+#    if os.getenv("LLM_MODE", "").lower() in ("mock", "1", "true", "yes"):
+#        return MockLLMClient()
+#    
+#    if os.getenv("LLM_MODEL_NAME", "").lower() == "mock":
+#        return MockLLMClient()
+#
+#    return LLMClient()
 
 #def get_llm_client() -> LLMClient:
 #    return LLMClient()

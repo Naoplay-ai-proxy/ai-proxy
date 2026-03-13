@@ -5,7 +5,7 @@ from typing import Dict, Any
 
 from proxy.app.schemas.meeting_summary import MeetingSummaryRequest
 from proxy.app.main import app
-from proxy.app.llm_client import get_llm_client
+from proxy.app.llm_client import build_llm_client
 from proxy.app.prompt import get_system_prompt
 
 
@@ -24,7 +24,7 @@ class SpyLLMClient:
 @pytest.fixture
 def spy_client():
     spy = SpyLLMClient()
-    app.dependency_overrides[get_llm_client] = lambda: spy
+    app.dependency_overrides[build_llm_client] = lambda: spy
     yield spy
     app.dependency_overrides = {}
 

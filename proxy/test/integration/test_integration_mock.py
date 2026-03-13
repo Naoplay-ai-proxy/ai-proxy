@@ -2,7 +2,7 @@ import pytest
 from fastapi.testclient import TestClient
 from typing import Dict, Any
 from proxy.app.main import app
-from proxy.app.llm_client import get_llm_client
+from proxy.app.llm_client import build_llm_client
 
 
 class FakeLLMClient:
@@ -19,7 +19,7 @@ class FakeLLMClient:
 @pytest.fixture
 def client_mocked():
 
-    app.dependency_overrides[get_llm_client] = lambda: FakeLLMClient()
+    app.dependency_overrides[build_llm_client] = lambda: FakeLLMClient()
     
     with TestClient(app) as c:
         yield c  # On donne le client au test
