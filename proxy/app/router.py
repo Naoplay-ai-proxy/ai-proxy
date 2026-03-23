@@ -7,6 +7,7 @@ router = APIRouter()
 
 
 @router.post("/meeting-summary", response_model=MeetingSummaryResponse)
+
 async def process_meeting_summary(
     request: Request,
     payload: MeetingSummaryRequest,

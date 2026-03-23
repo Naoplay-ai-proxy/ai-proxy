@@ -10,7 +10,6 @@ from .llm_client import build_llm_client
 from .router import router as api_router
 
 
-load_dotenv()
 
 # Logging de base pour l'application
 logging.basicConfig(level=logging.INFO)
@@ -21,19 +20,11 @@ app = FastAPI(
     description="Backend gouverné pour traitement IA",
     version="1.0.0"
 )
-
-
 @app.on_event("startup")
 async def startup_event() -> None:
-    # Charge la configuration applicative
     settings = load_settings()
-
-    # Rend les settings accessibles dans l'app
     app.state.settings = settings
-
-    # Construit le client LLM une seule fois au démarrage
     app.state.llm_client = build_llm_client(settings)
-
 
 # La version de l'API est gérée par Gravitee dans l'uri, pas besoin de préfixe ici
 app.include_router(api_router)

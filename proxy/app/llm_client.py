@@ -34,7 +34,7 @@ class LLMClient:
             return []
 
         if not isinstance(actions, list):
-            raise InvalidUpstreamResponseError()
+            raise  ()
 
         cleaned_actions: List[Dict[str, str]] = []
         for action in actions:
