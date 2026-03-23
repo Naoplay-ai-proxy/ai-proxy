@@ -62,7 +62,7 @@ class UpstreamRateLimitError(ProxyError):
 
 class UpstreamServiceError(ProxyError):
     """
-    Le provider IA a renvoyé une erreur serveur.
+    Le provider IA a renvoyé une erreur serveur ou n'est pas joignable.
     """
 
     def __init__(self):
@@ -71,6 +71,34 @@ class UpstreamServiceError(ProxyError):
             code="UPSTREAM_SERVICE_ERROR",
             status_code=502,
             retryable=True,
+        )
+
+
+class InvalidUpstreamResponseError(ProxyError):
+    """
+    Le provider IA a répondu, mais avec un contenu inexploitable ou inattendu.
+    """
+
+    def __init__(self):
+        super().__init__(
+            message="Le service IA a renvoyé une réponse invalide.",
+            code="INVALID_UPSTREAM_RESPONSE",
+            status_code=502,
+            retryable=True,
+        )
+
+
+class ServiceMisconfigurationError(ProxyError):
+    """
+    Le proxy est mal configuré pour appeler le provider IA.
+    """
+
+    def __init__(self):
+        super().__init__(
+            message="Le service IA est momentanément indisponible.",
+            code="SERVICE_MISCONFIGURATION",
+            status_code=500,
+            retryable=False,
         )
 
 
