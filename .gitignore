@@ -5,6 +5,7 @@ __pycache__/
 requirements.txt
 # Environnement virtuel
 .venv/
+venv/
 
 # VS Code
 .vscode/
