@@ -18,6 +18,4 @@ __pycache__/
 .DS_Store
 # ruff
 .ruff_cache/
-backup-docker-2026-03-10/
-*.tar
 venv/
