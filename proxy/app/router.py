@@ -1,9 +1,10 @@
-from fastapi import APIRouter, HTTPException, Request
+from fastapi import APIRouter, Request
+
+from .prompt import get_system_prompt
 from .schemas.meeting_summary import MeetingSummaryRequest, MeetingSummaryResponse
-#from .llm_client import LLMClient, get_llm_client
-from .prompt import get_system_prompt 
 
 router = APIRouter()
+
 
 @router.post("/meeting-summary", response_model=MeetingSummaryResponse)
 
@@ -11,31 +12,35 @@ async def process_meeting_summary(
     request: Request,
     payload: MeetingSummaryRequest,
 ) -> MeetingSummaryResponse:
-    try:
+    """
+    Endpoint métier :
+    - récupère le client LLM préparé au startup
+    - construit le prompt système
+    - envoie le transcript au LLM
+    - renvoie la réponse structurée
+    """
 
-        llm = request.app.state.llm_client
-        # 1. TRADUCTION DU CODE LANGUE
-        target_lang = "French" if payload.language == "fr" else "English"
+    # Client LLM partagé, initialisé dans app.state au démarrage
+    llm = request.app.state.llm_client
 
-        # 2. GÉNÉRATION DU PROMPT SYSTÈME
-        system_instructions = get_system_prompt(language=target_lang)
+    # Conversion simple du code langue vers la langue attendue par le prompt
+    target_lang = "French" if payload.language == "fr" else "English"
 
-        # 3. SÉCURISATION DU MESSAGE UTILISATEUR
-        user_content = f"TRANSCRIPT START:\n{payload.transcript}\nTRANSCRIPT END"
+    # Prompt système versionné côté serveur
+    system_instructions = get_system_prompt(language=target_lang)
 
-        # 4. APPEL DU CLIENT LLM
-        ai_data = await llm.ask_structured(
-            system_instructions=system_instructions,
-            user_message=user_content
-        )
+    # Encadrement explicite du transcript
+    user_content = f"TRANSCRIPT START:\n{payload.transcript}\nTRANSCRIPT END"
 
-        # 5. RETOUR VALIDÉ
-        return MeetingSummaryResponse(
-            meeting_id=payload.meeting_id,
-            summary=ai_data["summary"],
-            actions=ai_data["actions"]
-        )
+    # Appel du client LLM ; les erreurs remontent vers les handlers globaux
+    ai_data = await llm.ask_structured(
+        system_instructions=system_instructions,
+        user_message=user_content,
+    )
 
-    except Exception as e:
-        print(f"[ERROR] Integration failure: {str(e)}")
-        raise HTTPException(status_code=500, detail=f"Internal Error: {str(e)}")
+    # Réponse métier validée par le response_model
+    return MeetingSummaryResponse(
+        meeting_id=payload.meeting_id,
+        summary=ai_data["summary"],
+        actions=ai_data["actions"],
+    )
