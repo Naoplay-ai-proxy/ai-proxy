@@ -5,7 +5,11 @@ import re
 
 MAX_TRANSCRIPT_LENGTH = int(os.getenv("MAX_TRANSCRIPT_LENGTH", "200000"))
 ALLOWED_LANGUAGES = os.getenv("ALLOWED_LANGUAGES", "fr,en").split(",")
-ALLOWED_SET={x.strip() for x in ALLOWED_LANGUAGES if x.strip()}
+ALLOWED_SET={
+    lang.strip()
+    for lang in os.getenv("ALLOWED_LANGUAGES", "fr,en").split(",")
+    if lang.strip()
+}
 
 MEETING_ID_PATTERN = re.compile(r"^[A-Za-z0-9][A-Za-z0-9_-]{0,63}$")
 
