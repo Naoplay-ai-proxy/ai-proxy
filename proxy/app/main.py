@@ -9,7 +9,7 @@ from .errors import ProxyError
 from .llm_client import build_llm_client
 from .router import router as api_router
 
-
+load_dotenv()
 
 # Logging de base pour l'application
 logging.basicConfig(level=logging.INFO)
