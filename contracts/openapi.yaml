@@ -1,7 +1,7 @@
 openapi: 3.0.3
 info:
   title: Meeting Summary API
-  version: 1.0.2
+  version: 1.0.3
   description: API to generate structured meeting summaries
 
 paths:
@@ -58,10 +58,18 @@ paths:
                         description:
                           type: string
         "400":
-          description: Bad request
+          description: Bad Request – The request is malformed or missing required parameters.
         "401":
-          description: Unauthorized
+          description: Unauthorized – Authentication is missing or invalid.
         "422":
-          description: Validation error
+          description: Validation Error – The request parameters are syntactically correct but semantically invalid.
+        "429":
+		  description: Too Many Requests – The request rate limit has been exceeded.
         "500":
-          description: Internal server error
+          description: Internal Server Error – An unexpected internal error occurred.
+        "502":
+		  description: Bad Gateway – Upstream service returned an invalid response.
+        "503":
+		  description: Service Unavailable – The service is temporarily unavailable or overloaded.
+        "504":
+		  description: Gateway Timeout – The upstream service did not respond in time.
