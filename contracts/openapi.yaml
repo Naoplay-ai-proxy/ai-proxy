@@ -1,7 +1,7 @@
 openapi: 3.0.3
 info:
   title: Meeting Summary API
-  version: 1.0.2
+  version: 1.0.3
   description: API to generate structured meeting summaries
 
 paths:
