@@ -4,166 +4,75 @@
 
 ## Objet du document
 
-Ce document décrit l’approche retenue pour rendre observable l’usage du proxy IA exposé via Gravitee. L’objectif est de disposer de métriques exploitables pour le suivi fonctionnel, le diagnostic technique et la gouvernance minimale de l’API, sans s’appuyer sur le transcript brut des requêtes.
+Ce document décrit l’approche retenue pour rendre observable l’usage du proxy IA exposé via Gravitee.
 
-## Objectifs d’observabilité
+L’objectif est de disposer de métriques simples et exploitables pour suivre le trafic, la latence et les erreurs, sans dépendre du transcript brut des requêtes.
 
-L’observabilité attendue côté gateway doit permettre de répondre aux questions suivantes :
+## Indicateurs attendus
 
-- combien d’appels ont été effectués ;
-- avec quelle latence moyenne ;
-- quelle est la répartition des statuts HTTP ;
-- combien d’erreurs `4xx` et `5xx` sont observées ;
-- si les appels rejetés, limités ou en erreur sont bien visibles dans les outils Gravitee.
+L’observabilité retenue doit permettre de suivre au minimum :
 
-## Composants concernés
+- le volume d’appels ;
+- la latence moyenne ;
+- la répartition des statuts HTTP ;
+- les erreurs `4xx` ;
+- les erreurs `5xx`.
+
+## Chaîne d’observabilité
 
 ```text
-Client -> Gravitee Gateway -> Backend FastAPI
+Client -> Gravitee Gateway -> Backend ai-proxy
             |
             v
-      Analytics / Reporting
+      Analytics Gravitee
             |
             v
        Elasticsearch
 ```
 
-Les données visibles dans la console Gravitee reposent sur la collecte réalisée par la gateway puis stockée dans Elasticsearch.
+La gateway collecte les informations d’usage et les rend visibles via la console Gravitee et, selon les besoins, via Elasticsearch.
 
-## Indicateurs minimum à suivre
+## Source principale
 
-- volume total d’appels ;
-- latence moyenne ;
-- répartition des codes de statut ;
-- volume d’erreurs `4xx` ;
-- volume d’erreurs `5xx`.
-
-## Source des données
-
-La source principale d’observabilité côté Gravitee est constituée par les index de métriques, généralement de type :
+La lecture principale repose sur les métriques Gravitee, généralement stockées dans des index de type :
 
 ```text
 gravitee-v4-metrics-*
 ```
 
-Selon le niveau de journalisation activé, des informations complémentaires peuvent aussi apparaître dans des index de logs, mais les métriques doivent rester la base principale de lecture pour l’usage, la performance et les erreurs.
+Ces données suffisent pour le suivi de base de l’usage, de la performance et des erreurs.
 
-## Configuration attendue
+## Conditions de bon fonctionnement
 
-Pour que l’observabilité fonctionne correctement :
+Pour que l’observabilité soit exploitable :
 
-- la gateway doit avoir analytics/reporting activé ;
-- Elasticsearch doit être joignable depuis les composants Gravitee ;
-- les endpoints configurés dans les conteneurs doivent cibler les bons noms de services réseau ;
-- la console Gravitee doit être capable de lire les données remontées.
+- les analytics doivent être activés côté Gravitee ;
+- Elasticsearch doit être joignable par les composants Gravitee ;
+- la configuration réseau doit viser le bon service, en particulier en environnement Docker ;
+- la console doit pouvoir lire les données remontées.
 
-## Point d’attention en environnement Docker
+## Point d’attention Docker
 
-Dans un déploiement conteneurisé, l’usage de `localhost` dans la configuration analytics peut empêcher la remontée correcte des données si Elasticsearch tourne dans un autre conteneur.
+Lorsque Gravitee et Elasticsearch tournent dans des conteneurs distincts, `localhost` peut être inadapté.
 
-Dans ce cas, il faut utiliser le **nom du service ou du conteneur résolu sur le réseau Docker**, et non `localhost`.
+Il faut alors utiliser le **nom du service ou du conteneur accessible sur le réseau Docker**.
 
-## Vérifications de premier niveau
+## Limites de l’approche
 
-### Vérifier la présence des index Gravitee
+Cette observabilité n’a pas vocation à remplacer :
 
-```bash
-curl "http://localhost:9200/_cat/indices/gravitee-*?v"
-```
+- les logs applicatifs du backend ;
+- les diagnostics détaillés côté code ;
+- les traces métier fines.
 
-### Vérifier la présence de métriques récentes
+Elle fournit avant tout une visibilité gateway sur l’usage et les statuts.
 
-```bash
-curl -X GET "http://localhost:9200/gravitee-v4-metrics-*/_search" \
-  -H "Content-Type: application/json" \
-  -d '{
-    "size": 1,
-    "sort": [{ "@timestamp": "desc" }]
-  }'
-```
+## Articulation avec les autres documents
 
-## Requête d’agrégation recommandée
+- la configuration générale de l’exposition API est décrite dans `docs/gravitee-configuration.md` ;
+- la politique de journalisation structurée est décrite dans `docs/structured-logging.md` ;
+- les vérifications détaillées sont décrites dans `docs/runbooks/gravitee-validation-runbook.md`.
 
-La requête suivante permet d’obtenir un résumé exploitable sur les dernières 24 heures.
+## Référence associée
 
-```bash
-curl -X GET "http://localhost:9200/gravitee-v4-metrics-*/_search" \
-  -H "Content-Type: application/json" \
-  -d '{
-    "size": 0,
-    "query": {
-      "range": {
-        "@timestamp": {
-          "gte": "now-24h",
-          "lte": "now"
-        }
-      }
-    },
-    "aggs": {
-      "status_codes": { "terms": { "field": "status", "size": 10 } },
-      "errors_4xx": { "filter": { "range": { "status": { "gte": 400, "lt": 500 } } } },
-      "errors_5xx": { "filter": { "range": { "status": { "gte": 500 } } } },
-      "avg_latency": { "avg": { "field": "gateway-response-time-ms" } }
-    }
-  }'
-```
-
-## Interprétation des résultats
-
-- `hits.total.value` : nombre total de documents correspondant à la fenêtre de temps ;
-- `status_codes` : répartition des statuts HTTP ;
-- `errors_4xx` : volume d’erreurs côté accès ou validation ;
-- `errors_5xx` : volume d’erreurs côté backend ou service amont ;
-- `avg_latency` : latence moyenne observée par la gateway.
-
-## Usage opérationnel des métriques
-
-Les métriques Gravitee sont utiles pour :
-
-- valider qu’un appel de test est bien passé par la gateway ;
-- vérifier qu’un refus d’accès apparaît bien en `401` ou `403` ;
-- confirmer l’apparition d’un `429` lorsque la limitation de débit est atteinte ;
-- suivre la latence globale de l’API ;
-- préparer les futurs tableaux de bord d’usage, de coût et de qualité.
-
-## Segmentation possible
-
-Selon la configuration effective, l’analyse peut être segmentée par :
-
-- plan ;
-- API ;
-- application consommatrice ;
-- route ou chemin ;
-- identifiant consommateur si une stratégie de propagation existe.
-
-La segmentation avancée n’est pas obligatoire pour le MVP, mais la structure d’observabilité doit rester compatible avec cette évolution.
-
-## Différence entre analytics et logs
-
-- **Analytics / métriques** : conçus pour mesurer les volumes, les statuts et la latence.
-- **Logs** : conçus pour le diagnostic détaillé et la corrélation, avec davantage de vigilance sur la donnée capturée.
-
-L’observabilité de base doit fonctionner même si les logs détaillés sont volontairement limités pour des raisons de gouvernance.
-
-## Limites connues
-
-- un appel très récent peut ne pas apparaître instantanément selon le délai de remontée ;
-- des métriques visibles dans Elasticsearch peuvent ne pas être encore visibles dans la console selon le timing ;
-- une mauvaise configuration réseau entre conteneurs peut donner l’impression que Gravitee ne collecte rien ;
-- une console vide ne signifie pas automatiquement que l’appel n’a pas eu lieu : il faut vérifier la chaîne complète.
-
-## Dépannage de premier niveau
-
-| Symptôme | Cause probable | Première action |
-|---|---|---|
-| Aucun analytics visible | Endpoint Elasticsearch incorrect ou reporting non actif | Vérifier la configuration analytics côté gateway et les noms de services utilisés. |
-| Index Gravitee absents | Elasticsearch non alimenté ou non joignable | Vérifier la connectivité entre gateway et Elasticsearch. |
-| Volume visible mais latence incohérente | Champ consulté non adapté ou fenêtre trop courte | Rejouer un test contrôlé puis relancer la requête d’agrégation. |
-| Les tests Postman n’apparaissent pas | Mauvais environnement, mauvaise API ou mauvais filtrage | Vérifier l’API cible, la période, puis générer un trafic simple et identifiable. |
-
-## Éléments de preuve à conserver
-
-- capture ou export console montrant les appels ;
-- sortie `_cat/indices` montrant les index Gravitee ;
-- requête d’agrégation montrant statuts, erreurs et latence ;
-- preuve que les scénarios `200`, `401` et `429` apparaissent correctement.
+- `docs/runbooks/gravitee-validation-runbook.md`
