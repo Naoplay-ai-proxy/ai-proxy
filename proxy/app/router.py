@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends, Request
 from .core.auth import AuthenticatedUser
-from .core.security import require_naoplay_user
+from .dependencies.security import require_naoplay_user
 from .prompt import get_system_prompt
 from .schemas.meeting_summary import MeetingSummaryRequest, MeetingSummaryResponse
 

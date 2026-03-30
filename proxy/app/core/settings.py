@@ -21,6 +21,7 @@ class AppSettings:
     llm_api_key_secret_id: str
     llm_api_key_secret_version: str
     allowed_google_domain : str= "naoplay.fr"
+    google_web_client_id: str = ""
 
 
 def load_settings() -> AppSettings:
@@ -33,6 +34,7 @@ def load_settings() -> AppSettings:
     llm_api_key_secret_id = os.getenv("LLM_API_KEY_SECRET_ID", "LLM_API_KEY")
     llm_api_key_secret_version = os.getenv("LLM_API_KEY_SECRET_VERSION", "latest")
     allowed_google_domain = os.getenv("ALLOWED_GOOGLE_DOMAIN", "naoplay.fr")
+    google_web_client_id = os.getenv("GOOGLE_WEB_CLIENT_ID", "").strip()
     if not llm_api_key:
         if not gcp_project_id:
             raise RuntimeError(
@@ -65,4 +67,5 @@ def load_settings() -> AppSettings:
         llm_api_key_secret_id=llm_api_key_secret_id,
         llm_api_key_secret_version=llm_api_key_secret_version,
         allowed_google_domain=allowed_google_domain,
+        google_web_client_id=google_web_client_id,
     )
