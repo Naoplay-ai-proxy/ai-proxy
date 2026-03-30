@@ -64,12 +64,12 @@ paths:
         "422":
           description: Validation Error – The request parameters are syntactically correct but semantically invalid.
         "429":
-		  description: Too Many Requests – The request rate limit has been exceeded.
+          description: Too Many Requests – The request rate limit has been exceeded.
         "500":
           description: Internal Server Error – An unexpected internal error occurred.
         "502":
-		  description: Bad Gateway – Upstream service returned an invalid response.
+          description: Bad Gateway – Upstream service returned an invalid response.
         "503":
-		  description: Service Unavailable – The service is temporarily unavailable or overloaded.
+          description: Service Unavailable – The service is temporarily unavailable or overloaded.
         "504":
-		  description: Gateway Timeout – The upstream service did not respond in time.
+          description: Gateway Timeout – The upstream service did not respond in time.
