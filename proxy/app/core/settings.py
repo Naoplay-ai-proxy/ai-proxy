@@ -20,21 +20,19 @@ class AppSettings:
     gcp_project_id: str | None
     llm_api_key_secret_id: str
     llm_api_key_secret_version: str
+    allowed_google_domain : str= "naoplay.fr"
 
 
 def load_settings() -> AppSettings:
     """
-    En prod:
-      - charge LLM_API_KEY depuis Google Secret Manager
-
-    En local:
-      - fallback possible sur LLM_API_KEY si présent dans l'environnement
+    En prod: charge LLM_API_KEY depuis Google Secret Manager
+    En local: fallback possible sur LLM_API_KEY si présent dans l'environnement
     """
     llm_api_key = os.getenv("LLM_API_KEY")
     gcp_project_id = os.getenv("GCP_PROJECT_ID")
     llm_api_key_secret_id = os.getenv("LLM_API_KEY_SECRET_ID", "LLM_API_KEY")
     llm_api_key_secret_version = os.getenv("LLM_API_KEY_SECRET_VERSION", "latest")
-
+    allowed_google_domain = os.getenv("ALLOWED_GOOGLE_DOMAIN", "naoplay.fr")
     if not llm_api_key:
         if not gcp_project_id:
             raise RuntimeError(
@@ -66,4 +64,5 @@ def load_settings() -> AppSettings:
         gcp_project_id=gcp_project_id,
         llm_api_key_secret_id=llm_api_key_secret_id,
         llm_api_key_secret_version=llm_api_key_secret_version,
+        allowed_google_domain=allowed_google_domain,
     )

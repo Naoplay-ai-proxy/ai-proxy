@@ -1,5 +1,6 @@
-from fastapi import APIRouter, Request
-
+from fastapi import APIRouter, Depends, Request
+from .core.auth import AuthenticatedUser
+from .core.security import require_naoplay_user
 from .prompt import get_system_prompt
 from .schemas.meeting_summary import MeetingSummaryRequest, MeetingSummaryResponse
 
@@ -11,13 +12,12 @@ router = APIRouter()
 async def process_meeting_summary(
     request: Request,
     payload: MeetingSummaryRequest,
+    user: AuthenticatedUser = Depends(require_naoplay_user),
+
 ) -> MeetingSummaryResponse:
     """
-    Endpoint métier :
-    - récupère le client LLM préparé au startup
-    - construit le prompt système
-    - envoie le transcript au LLM
-    - renvoie la réponse structurée
+    Cet endpoint ne traite la demande qu'après contrôle d'accès,
+    afin d'éviter tout coût provider ou traitement métier pour un utilisateur refusé.
     """
 
     # Client LLM partagé, initialisé dans app.state au démarrage
