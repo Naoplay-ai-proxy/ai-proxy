@@ -1,0 +1,71 @@
+# P3-01 — Obtention et transmission d’un ID token Google
+
+## Objectif
+
+Mettre en place et documenter l’obtention d’un **ID token Google signé** représentant l’utilisateur Workspace, puis sa transmission vers le proxy via le header `Authorization`.
+
+---
+
+## Principe
+
+Le token utilisé est un **ID token Google (JWT signé)** obtenu via un flux OpenID Connect / OAuth 2.0.
+
+Pour cette phase, le token est récupéré manuellement à l’aide de l’OAuth Playground afin de valider le mécanisme.
+
+---
+
+## Obtention du token
+
+### 1. Génération des credentials OAuth
+
+Un client OAuth 2.0 est créé dans Google Cloud :
+
+- Client ID  
+- Client Secret  
+
+Ces credentials permettent d’initier un flux OpenID Connect.
+
+---
+
+### 2. Utilisation de l’OAuth Playground
+
+L’OAuth 2.0 Playground est utilisé pour exécuter manuellement le flux d’authentification :
+
+- sélection des scopes OpenID (`openid`, `email`, `profile`)  
+- authentification avec un compte Google Workspace  
+- consentement utilisateur  
+
+---
+
+### 3. Récupération du token
+
+À l’issue du flux, un token est généré.
+
+Dans un flux OpenID Connect, l’`id_token` est le jeton d’identité signé contenant les informations de l’utilisateur.
+
+---
+
+## Transmission vers le proxy
+
+Le token est transmis via le header HTTP standard : 
+Authorization: Bearer <id_token>
+
+---
+
+## Rôle des composants
+
+### Google Cloud
+- fournit les credentials OAuth  
+
+### OAuth Playground
+- permet de simuler le flux OAuth/OpenID Connect  
+- permet de récupérer un token utilisateur  
+
+### Gateway (Gravitee)
+- transmet le header `Authorization` sans modification  
+
+### Proxy / Backend
+- lit le header `Authorization`  
+- extrait le token pour traitement futur  
+
+
