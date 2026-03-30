@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <title>POC Google ID Token</title>
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        margin: 40px;
+      }
+      .box {
+        max-width: 800px;
+      }
+      pre {
+        white-space: pre-wrap;
+        word-break: break-word;
+        background: #f5f5f5;
+        padding: 12px;
+        border-radius: 8px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="box">
+      <h1>POC Google ID Token</h1>
+      <p id="status">Statut : en attente de connexion</p>
+
+      <div
+        id="g_id_onload"
+        data-client_id="480696974037-3ov4s7290hrs8527dc77uuun1pi5gcsf.apps.googleusercontent.com"
+        data-callback="handleCredentialResponse"
+        data-auto_prompt="false"
+      ></div>
+
+      <div
+        class="g_id_signin"
+        data-type="standard"
+        data-size="large"
+        data-theme="outline"
+        data-text="signin_with"
+        data-shape="rectangular"
+        data-logo_alignment="left"
+      ></div>
+
+      <h2>Claims décodées</h2>
+      <pre id="claims">Aucune donnée</pre>
+
+      <h2>Token</h2>
+      <pre id="token">Aucun token</pre>
+    </div>
+
+    <script>
+      function decodeJwtPayload(token) {
+        const payload = token.split(".")[1];
+        const base64 = payload.replace(/-/g, "+").replace(/_/g, "/");
+        const json = atob(base64);
+        return JSON.parse(json);
+      }
+
+      function handleCredentialResponse(response) {
+        const idToken = response.credential;
+        const claims = decodeJwtPayload(idToken);
+
+        document.getElementById("status").textContent = "Statut : token obtenu";
+        document.getElementById("token").textContent = idToken;
+        document.getElementById("claims").textContent = JSON.stringify(claims, null, 2);
+
+        window.currentIdToken = idToken;
+      }
+    </script>
+  </body>
+</html>
