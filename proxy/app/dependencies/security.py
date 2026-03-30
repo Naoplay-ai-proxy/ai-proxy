@@ -42,7 +42,7 @@ def require_authenticated_user(
     if not sub or not email:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Invalid token claims",
+            detail="Invalid token",
         )
     return AuthenticatedUser(
         sub=sub, 
